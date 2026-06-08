@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+
+  frontend:
+    build: ./apps/frontend
+    ports:
+      - "5173:5173"
+
+  backend:
+    build: ./apps/backend
+    ports:
+      - "5000:5000"
+
+  ai-engine:
+    build: ./apps/ai-engine
+    ports:
+      - "8000:8000"
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: marketoracle
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
