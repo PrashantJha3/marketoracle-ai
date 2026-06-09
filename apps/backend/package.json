@@ -3,17 +3,21 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "dev": "nodemon index.js",
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": ["stock", "market", "finance", "yahoo", "proxy"],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "MarketOracle backend proxy for live stock data from Yahoo Finance.",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.4"
+  },
   "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/node": "^25.9.1",
-    "nodemon": "^3.1.14",
-    "ts-node": "^10.9.2",
-    "typescript": "^6.0.3"
+    "nodemon": "^3.1.14"
   }
 }

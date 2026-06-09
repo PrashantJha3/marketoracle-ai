@@ -2,19 +2,35 @@ name: CI
 
 on:
   push:
-    branches:
-      - main
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
 
 jobs:
-  build:
-
+  backend:
+    name: Backend Build
     runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        working-directory: apps/backend
     steps:
       - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
       - run: npm install
+      - run: npm test
 
+  frontend:
+    name: Frontend Build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - run: npm install
       - run: npm run build
