@@ -1,0 +1,13 @@
+{
+  "name": "ai-engine",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Python FastAPI AI service for MarketOracle.",
+  "scripts": {
+    "dev": "uvicorn main:app --reload --host 0.0.0.0 --port 8000",
+    "start": "uvicorn main:app --host 0.0.0.0 --port 8000",
+    "lint": "echo \"Python lint not configured yet\""
+  },
+  "author": "",
+  "license": "MIT"
+}

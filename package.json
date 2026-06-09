@@ -7,7 +7,9 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "turbo run dev",
+    "dev": "turbo run dev --parallel",
+    "dev:backend": "npm --workspace backend run dev",
+    "dev:frontend": "npm --workspace frontend run dev",
     "build": "turbo run build",
     "lint": "turbo run lint",
     "format": "prettier . --write",
@@ -15,7 +17,10 @@
     "docker:down": "docker compose down"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
     "eslint": "^8.0.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
     "prettier": "^3.0.0",
     "turbo": "^2.0.0"
   }

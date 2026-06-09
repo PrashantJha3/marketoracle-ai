@@ -14,32 +14,34 @@ MarketOracle is a free stock intelligence dashboard built with React and Node.js
    npm install
    ```
 
-2. Start backend and frontend separately for local development:
+2. Start the backend and frontend together from the repository root:
    ```bash
-   cd apps/backend
-   npm run dev
-   ```
-   ```bash
-   cd apps/frontend
    npm run dev
    ```
 
-3. Or start everything with Docker Compose:
+3. Start a single service directly:
+   ```bash
+   npm run dev:backend
+   npm run dev:frontend
+   ```
+
+4. Or start the full stack with Docker Compose:
    ```bash
    npm run docker:up
    ```
 
-4. Open the dashboard:
+5. Open the dashboard:
    - `http://localhost:5173`
 
 ## Milestone 1: Monorepo Setup
 
 This milestone includes:
 - monorepo workspace structure with `apps/` and `packages/`
+- root workspace scripts for `dev`, `build`, `lint`, and `format`
 - Docker Compose for frontend, backend, AI engine, PostgreSQL, and Redis
 - TypeScript configs for frontend and shared workspace
-- ESLint and Prettier tooling
-- local startup scripts in `package.json`
+- ESLint and Prettier tooling across the monorepo
+- local startup scripts and app metadata for service scaffolding
 
 ## Notes
 
