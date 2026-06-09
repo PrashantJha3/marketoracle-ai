@@ -1,0 +1,9 @@
+node_modules
+**/node_modules
+dist
+build
+.vscode
+.venv
+apps/**/node_modules
+apps/**/dist
+apps/**/.turbo

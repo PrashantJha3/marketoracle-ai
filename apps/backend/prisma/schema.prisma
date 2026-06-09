@@ -1,0 +1,81 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Stock {
+  id        Int     @id @default(autoincrement())
+  symbol    String  @unique
+  name      String
+  exchange  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  quotes     Quote[]
+  indicators Indicator[]
+  @@map("stocks")
+}
+
+model Quote {
+  id            Int     @id @default(autoincrement())
+  symbol        String
+  price         Float
+  change        Float
+  changePercent Float
+  open          Float?
+  high          Float?
+  low           Float?
+  volume        BigInt?
+  marketCap     BigInt?
+  timestamp     DateTime @default(now())
+  
+  stock   Stock @relation(fields: [symbol], references: [symbol], onDelete: Cascade)
+  
+  @@index([symbol])
+  @@index([timestamp])
+  @@map("quotes")
+}
+
+model Indicator {
+  id        Int     @id @default(autoincrement())
+  symbol    String
+  type      String  // "SMA", "EMA", "RSI", "MACD", etc.
+  value     Float
+  timestamp DateTime @default(now())
+  
+  stock   Stock @relation(fields: [symbol], references: [symbol], onDelete: Cascade)
+  
+  @@index([symbol])
+  @@index([type])
+  @@map("indicators")
+}
+
+model Portfolio {
+  id        Int     @id @default(autoincrement())
+  userId    Int
+  symbol    String
+  quantity  Float
+  entryPrice Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([userId])
+  @@map("portfolios")
+}
+
+model User {
+  id        Int     @id @default(autoincrement())
+  email     String  @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("users")
+}

@@ -1,6 +1,7 @@
 {
   "name": "marketoracle-ai",
   "private": true,
+  "packageManager": "npm@10.0.0",
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -10,10 +11,12 @@
     "build": "turbo run build",
     "lint": "turbo run lint",
     "format": "prettier . --write",
-     "docker:up": "docker compose up",
+    "docker:up": "docker compose up --build",
     "docker:down": "docker compose down"
   },
   "devDependencies": {
+    "eslint": "^8.0.0",
+    "prettier": "^3.0.0",
     "turbo": "^2.0.0"
   }
 }

@@ -51,7 +51,7 @@ function normalizeSymbol(value: string) {
 }
 
 function isValidSymbol(value: string) {
-  return /^[A-Z0-9.\-]{1,12}$/.test(value.trim().toUpperCase())
+  return /^[A-Z0-9.-]{1,12}$/.test(value.trim().toUpperCase())
 }
 
 function formatCurrency(value: number | null, currency = 'USD') {

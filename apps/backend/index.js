@@ -1,11 +1,24 @@
 const express = require('express')
 const cors = require('cors')
+const { PrismaClient } = require('@prisma/client')
 
-const PORT = Number(process.env.PORT) || 4000
+const PORT = Number(process.env.PORT) || 5000
 const CACHE_MS = Number(process.env.CACHE_MS || 60_000)
 const ALLOWED_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:5173'
 
 const cache = new Map()
+const prisma = new PrismaClient()
+
+// Handle Prisma disconnection gracefully
+process.on('SIGINT', async () => {
+  await prisma.$disconnect()
+  process.exit(0)
+})
+
+process.on('SIGTERM', async () => {
+  await prisma.$disconnect()
+  process.exit(0)
+})
 
 function buildCacheKey(prefix, symbol, extra = '') {
   return `${prefix}:${symbol}:${extra}`
@@ -30,7 +43,7 @@ function normalizeSymbol(raw) {
 
 function validateSymbol(raw) {
   const symbol = normalizeSymbol(raw)
-  return symbol.length > 0 && /^[A-Z0-9.\-]{1,12}$/.test(symbol)
+  return symbol.length > 0 && /^[A-Z0-9.-]{1,12}$/.test(symbol)
 }
 
 async function safeFetchJson(url) {
@@ -215,6 +228,76 @@ app.get('/api/chart', async (req, res) => {
     res.json(payload)
   } catch (error) {
     res.status(502).json({ error: 'Unable to fetch chart data', detail: error?.message || 'unknown' })
+  }
+})
+
+// Database endpoints for storing and retrieving quotes
+app.post('/api/db/save-quote', async (req, res) => {
+  try {
+    const { symbol, price, change, changePercent, open, high, low, volume, marketCap } = req.body
+
+    if (!symbol || typeof price !== 'number') {
+      return res.status(400).json({ error: 'Missing or invalid symbol/price' })
+    }
+
+    // Upsert Stock
+    const stock = await prisma.stock.upsert({
+      where: { symbol },
+      update: { updatedAt: new Date() },
+      create: {
+        symbol,
+        name: symbol, // Placeholder, will be updated later
+      },
+    })
+
+    // Create Quote
+    const quote = await prisma.quote.create({
+      data: {
+        symbol,
+        price,
+        change: change ?? 0,
+        changePercent: changePercent ?? 0,
+        open: open ?? null,
+        high: high ?? null,
+        low: low ?? null,
+        volume: volume ?? null,
+        marketCap: marketCap ?? null,
+      },
+    })
+
+    res.json({ success: true, quote })
+  } catch (error) {
+    console.error('Database error:', error)
+    res.status(500).json({ error: 'Unable to save quote', detail: error?.message || 'unknown' })
+  }
+})
+
+app.get('/api/db/quotes/:symbol', async (req, res) => {
+  try {
+    const { symbol } = req.params
+    if (!validateSymbol(symbol)) {
+      return res.status(400).json({ error: 'Invalid symbol' })
+    }
+
+    const quotes = await prisma.quote.findMany({
+      where: { symbol: symbol.toUpperCase() },
+      orderBy: { timestamp: 'desc' },
+      take: 100,
+    })
+
+    res.json({ symbol: symbol.toUpperCase(), count: quotes.length, quotes })
+  } catch (error) {
+    console.error('Database error:', error)
+    res.status(500).json({ error: 'Unable to fetch quotes', detail: error?.message || 'unknown' })
+  }
+})
+
+app.get('/api/db/health', async (req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`
+    res.json({ status: 'ok', database: 'connected' })
+  } catch (error) {
+    res.status(503).json({ status: 'error', database: 'disconnected', detail: error?.message })
   }
 })
 

@@ -1,0 +1,14 @@
+node_modules
+dist
+build
+*.log
+.vscode
+.venv
+apps/**/node_modules
+apps/**/dist
+apps/**/.turbo
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+Dockerfile
+.dockerignore
