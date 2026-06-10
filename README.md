@@ -25,12 +25,23 @@ MarketOracle is a free stock intelligence dashboard built with React and Node.js
    npm run dev:frontend
    ```
 
-4. Or start the full stack with Docker Compose:
+4. Copy the example environment file and configure local values:
+   ```bash
+   cp .env.example .env
+   ```
+
+5. Start the full stack with Docker Compose:
    ```bash
    npm run docker:up
    ```
 
-5. Open the dashboard:
+6. Run Prisma setup for backend once the database is available:
+   ```bash
+   npm run prisma:generate
+   npm run prisma:migrate:dev
+   ```
+
+7. Open the dashboard:
    - `http://localhost:5173`
 
 ## Milestone 1: Monorepo Setup
@@ -42,6 +53,15 @@ This milestone includes:
 - TypeScript configs for frontend and shared workspace
 - ESLint and Prettier tooling across the monorepo
 - local startup scripts and app metadata for service scaffolding
+
+## Milestone 2: PostgreSQL + Prisma
+
+This milestone includes:
+- PostgreSQL schema scaffolding in `apps/backend/prisma/schema.prisma`
+- Prisma client generation and migration scripts in `apps/backend/package.json`
+- Docker Compose backend database config using `DATABASE_URL`
+- local `.env.example` PostgreSQL and Redis examples
+- backend environment loading via `dotenv`
 
 ## Notes
 

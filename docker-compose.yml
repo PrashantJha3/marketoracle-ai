@@ -20,6 +20,9 @@ services:
       - redis
     environment:
       - PORT=5000
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/marketoracle
+      - REDIS_URL=redis://redis:6379
+      - CORS_ORIGIN=http://localhost:5173
 
   ai-engine:
     build:

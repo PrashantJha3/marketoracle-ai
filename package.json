@@ -14,7 +14,10 @@
     "lint": "turbo run lint",
     "format": "prettier . --write",
     "docker:up": "docker compose up --build",
-    "docker:down": "docker compose down"
+    "docker:down": "docker compose down",
+    "prisma:generate": "npm --workspace backend run prisma:generate",
+    "prisma:migrate:dev": "npm --workspace backend run prisma:migrate:dev",
+    "prisma:migrate:deploy": "npm --workspace backend run prisma:migrate:deploy"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.0.0",

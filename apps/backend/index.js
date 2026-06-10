@@ -1,13 +1,18 @@
+require('dotenv').config()
+
 const express = require('express')
 const cors = require('cors')
 const { PrismaClient } = require('@prisma/client')
+const { PrismaPg } = require('@prisma/adapter-pg')
 
 const PORT = Number(process.env.PORT) || 5000
 const CACHE_MS = Number(process.env.CACHE_MS || 60_000)
 const ALLOWED_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:5173'
 
 const cache = new Map()
-const prisma = new PrismaClient()
+console.log('[DEBUG] DATABASE_URL=', process.env.DATABASE_URL)
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL })
+const prisma = new PrismaClient({ adapter })
 
 // Handle Prisma disconnection gracefully
 process.on('SIGINT', async () => {
@@ -234,19 +239,53 @@ app.get('/api/chart', async (req, res) => {
 // Database endpoints for storing and retrieving quotes
 app.post('/api/db/save-quote', async (req, res) => {
   try {
-    const { symbol, price, change, changePercent, open, high, low, volume, marketCap } = req.body
+    const {
+      symbol: rawSymbol,
+      price,
+      change,
+      changePercent,
+      open,
+      high,
+      low,
+      volume,
+      marketCap,
+      name,
+      exchange,
+    } = req.body
 
-    if (!symbol || typeof price !== 'number') {
+    if (!rawSymbol || typeof price !== 'number') {
       return res.status(400).json({ error: 'Missing or invalid symbol/price' })
     }
 
-    // Upsert Stock
+    const symbol = normalizeSymbol(rawSymbol)
+
+    const parseBigInt = (value) => {
+      if (value === null || value === undefined || value === '') {
+        return null
+      }
+      if (typeof value === 'bigint') {
+        return value
+      }
+      if (typeof value === 'number') {
+        return BigInt(Math.trunc(value))
+      }
+      return BigInt(String(value))
+    }
+
+    const volumeValue = parseBigInt(volume)
+    const marketCapValue = parseBigInt(marketCap)
+
     const stock = await prisma.stock.upsert({
       where: { symbol },
-      update: { updatedAt: new Date() },
+      update: {
+        name: name || symbol,
+        exchange: exchange || undefined,
+        updatedAt: new Date(),
+      },
       create: {
         symbol,
-        name: symbol, // Placeholder, will be updated later
+        name: name || symbol,
+        exchange: exchange ?? null,
       },
     })
 
@@ -260,8 +299,8 @@ app.post('/api/db/save-quote', async (req, res) => {
         open: open ?? null,
         high: high ?? null,
         low: low ?? null,
-        volume: volume ?? null,
-        marketCap: marketCap ?? null,
+        volume: volumeValue,
+        marketCap: marketCapValue,
       },
     })
 
