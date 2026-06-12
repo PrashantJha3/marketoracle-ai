@@ -57,3 +57,16 @@ if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
+
+app = FastAPI()
+
+@app.get("/sync")
+
+def sync():
+
+    sync_all_stocks()
+
+    return {
+        "message": "Sync Complete"
+    }

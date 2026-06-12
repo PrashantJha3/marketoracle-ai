@@ -5,3 +5,6 @@ numpy
 yfinance
 scikit-learn
 xgboost
+sqlalchemy
+psycopg2-binary
+tenacity
