@@ -8,3 +8,5 @@ xgboost
 sqlalchemy
 psycopg2-binary
 tenacity
+ta
+pandas-ta
